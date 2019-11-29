@@ -35,3 +35,17 @@ try {
 }
 catch {
 }
+
+$analyzerFilePath = Join-Path $analyzersPath "Newtonsoft.Json.dll"
+try {
+    $project.Object.AnalyzerReferences.Remove($analyzerFilePath)
+}
+catch {
+}
+
+$analyzerFilePath = Join-Path $analyzersPath "Mono.Posix.dll"
+try {
+    $project.Object.AnalyzerReferences.Remove($analyzerFilePath)
+}
+catch {
+}

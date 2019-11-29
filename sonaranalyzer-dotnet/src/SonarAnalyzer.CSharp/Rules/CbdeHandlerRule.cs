@@ -35,11 +35,13 @@ namespace SonarAnalyzer.Rules.CSharp
         CbdeHandler cbdeHandler = new CbdeHandler();
         private const string S2583DiagnosticId = "S2583";
         private const string S2583MessageFormat = "{0}";
-        private static readonly DiagnosticDescriptor ruleS2583 = DiagnosticDescriptorBuilder.GetDescriptor(S2583DiagnosticId, S2583MessageFormat, RspecStrings.ResourceManager, fadeOutCode: true);
+        // true or false ?
+        private static readonly DiagnosticDescriptor ruleS2583 = DiagnosticDescriptorBuilder.GetDescriptor(S2583DiagnosticId, S2583MessageFormat, RspecStrings.ResourceManager, fadeOutCode: false);
 
         private const string S3949DiagnosticId = "S3949";
         private const string S3949MessageFormat = "{0}";
-        private static readonly DiagnosticDescriptor ruleS3949 = DiagnosticDescriptorBuilder.GetDescriptor(S3949DiagnosticId, S3949MessageFormat, RspecStrings.ResourceManager, fadeOutCode: true);
+        // true or false ?
+        private static readonly DiagnosticDescriptor ruleS3949 = DiagnosticDescriptorBuilder.GetDescriptor(S3949DiagnosticId, S3949MessageFormat, RspecStrings.ResourceManager, fadeOutCode: false);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(ruleS2583, ruleS3949);
 
@@ -57,7 +59,8 @@ namespace SonarAnalyzer.Rules.CSharp
             if (!ruleIdToDiagDescriptor.ContainsKey(key))
                 throw new InvalidOperationException($"CBDE should not raise issues on key {key}");
 
-            context.ReportDiagnosticWhenActive(Diagnostic.Create(ruleIdToDiagDescriptor[key], loc, message));
+            context.ReportDiagnostic(Diagnostic.Create(ruleIdToDiagDescriptor[key], loc, message));
+            //context.ReportDiagnosticWhenActive(Diagnostic.Create(ruleIdToDiagDescriptor[key], loc, message));
         }
     }
 }

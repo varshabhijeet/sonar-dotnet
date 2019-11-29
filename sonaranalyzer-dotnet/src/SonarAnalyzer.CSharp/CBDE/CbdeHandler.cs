@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace SonarAnalyzer.Rules.CSharp
 {
@@ -155,15 +156,61 @@ namespace SonarAnalyzer.Rules.CSharp
         }
         private static void UnpackCbdeExe()
         {
+            GlobalLog("BeforePlatform GetExecutionAssembly");
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            const string res = "SonarAnalyzer.CBDE.windows.dotnet-symbolic-execution.exe";
-            cbdeBinaryPath = Path.Combine(mlirProcessSpecificPath, "windows/dotnet-symbolic-execution.exe");
+
+            GlobalLog("BeforePlatform detection");
+            string res;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                res = "SonarAnalyzer.CBDE.windows.dotnet-symbolic-execution.exe";
+                cbdeBinaryPath = Path.Combine(mlirProcessSpecificPath, "windows/dotnet-symbolic-execution.exe");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                res = "SonarAnalyzer.CBDE.linux.dotnet-symbolic-execution";
+                cbdeBinaryPath = Path.Combine(mlirProcessSpecificPath, "linux/dotnet-symbolic-execution");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                res = "SonarAnalyzer.CBDE.macos.dotnet-symbolic-execution";
+                cbdeBinaryPath = Path.Combine(mlirProcessSpecificPath, "macos/dotnet-symbolic-execution");
+            }
+            else
+            {
+                GlobalLog("Not a supported platform");
+                throw new System.Exception("unsupported platform for CBDE");
+            }
+            GlobalLog(String.Format("Try Create Directory {0}", Path.GetDirectoryName(cbdeBinaryPath)));
             Directory.CreateDirectory(Path.GetDirectoryName(cbdeBinaryPath));
+            GlobalLog("Create Directory OK");
             var stream = assembly.GetManifestResourceStream(res);
+            GlobalLog("GetResourceStream OK");
             var fileStream = File.Create(cbdeBinaryPath);
+            GlobalLog("Create exe file OK");
             stream.Seek(0, SeekOrigin.Begin);
             stream.CopyTo(fileStream);
             fileStream.Close();
+            GlobalLog("Close exe file OK");
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    GlobalLog("Test OK");
+                    var unixFileInfo = new Mono.Unix.UnixFileInfo(cbdeBinaryPath);
+                    GlobalLog("New OK");
+                    unixFileInfo.FileAccessPermissions |= Mono.Unix.FileAccessPermissions.OtherExecute;
+                    unixFileInfo.FileAccessPermissions |= Mono.Unix.FileAccessPermissions.GroupExecute;
+                    unixFileInfo.FileAccessPermissions |= Mono.Unix.FileAccessPermissions.UserExecute;
+                    GlobalLog("Chmod OK");
+                }
+            }
+            catch (Exception e)
+            {
+                // Something unexpected went wrong.
+                GlobalLog(e.ToString());
+                // Maybe it is also necessary to terminate / restart the application.
+            }
         }
         private void InitializePathsAndLog(string assemblyName, int compilationHash)
         {
