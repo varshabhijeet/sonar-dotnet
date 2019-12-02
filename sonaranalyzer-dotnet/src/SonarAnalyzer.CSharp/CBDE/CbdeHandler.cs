@@ -321,6 +321,7 @@ namespace SonarAnalyzer.Rules.CSharp
             var end = new LinePosition(line, col + 1);
             var loc = Location.Create(file, TextSpan.FromBounds(0, 0), new LinePositionSpan(begin, end));
 
+            GlobalLog(String.Format("reporting from JToken: {0}: {1}", key, message));
             raiseIssue(key, message, loc, context);
         }
         private void RaiseIssueFromFailedCbdeRun(CompilationAnalysisContext context)
@@ -339,28 +340,32 @@ namespace SonarAnalyzer.Rules.CSharp
         {
             string jsonFileContent;
             List<List<JObject>> jsonIssues;
-            logFile.WriteLine("- parsing json file {0}", cbdeJsonOutputPath);
+            //logFile.WriteLine("- parsing json file {0}", cbdeJsonOutputPath);
+            GlobalLog(String.Format("- parsing json file {0}", cbdeJsonOutputPath));
             try
             {
                 jsonFileContent = File.ReadAllText(cbdeJsonOutputPath);
                 jsonIssues = JsonConvert.DeserializeObject<List<List<JObject>>>(jsonFileContent);
             }
-            catch
+            catch(Exception e)
             {
-                logFile.WriteLine("- error parsing json file {0}", cbdeJsonOutputPath);
+                //logFile.WriteLine("- error parsing json file {0}", cbdeJsonOutputPath);
+                GlobalLog(String.Format("- error parsing json file {0}: {1}", cbdeJsonOutputPath, e.Message));
                 return;
             }
 
             foreach (var issue in jsonIssues.First())
             {
-                logFile.WriteLine("  * processing token {0}", issue.ToString());
+                //logFile.WriteLine("  * processing token {0}", issue.ToString());
+                GlobalLog(String.Format("  * processing token {0}", issue.ToString()));
                 try
                 {
                     RaiseIssueFromJToken(issue, context);
                 }
                 catch
                 {
-                    logFile.WriteLine("  * error reporting token {0}", cbdeJsonOutputPath);
+                    //logFile.WriteLine("  * error reporting token {0}", cbdeJsonOutputPath);
+                    GlobalLog(String.Format("  * error reporting token {0}", cbdeJsonOutputPath));
                     continue;
                 }
             }

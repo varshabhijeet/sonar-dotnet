@@ -36,12 +36,12 @@ namespace SonarAnalyzer.Rules.CSharp
         private const string S2583DiagnosticId = "S2583";
         private const string S2583MessageFormat = "{0}";
         // true or false ?
-        private static readonly DiagnosticDescriptor ruleS2583 = DiagnosticDescriptorBuilder.GetDescriptor(S2583DiagnosticId, S2583MessageFormat, RspecStrings.ResourceManager, fadeOutCode: false);
+        private static readonly DiagnosticDescriptor ruleS2583 = DiagnosticDescriptorBuilder.GetDescriptor(S2583DiagnosticId, S2583MessageFormat, RspecStrings.ResourceManager);
 
         private const string S3949DiagnosticId = "S3949";
         private const string S3949MessageFormat = "{0}";
         // true or false ?
-        private static readonly DiagnosticDescriptor ruleS3949 = DiagnosticDescriptorBuilder.GetDescriptor(S3949DiagnosticId, S3949MessageFormat, RspecStrings.ResourceManager, fadeOutCode: false);
+        private static readonly DiagnosticDescriptor ruleS3949 = DiagnosticDescriptorBuilder.GetDescriptor(S3949DiagnosticId, S3949MessageFormat, RspecStrings.ResourceManager);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(ruleS2583, ruleS3949);
 
