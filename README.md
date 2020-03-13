@@ -16,7 +16,7 @@ languages and are part of the [SonarQube](http://www.sonarqube.org/), [SonarClou
 * Metrics (complexity, duplications, number of lines etc.)
 * Import of [unit test results](https://docs.sonarqube.org/x/CoBh) from VSTest, NUnit and xUnit
 * Import of [test coverage reports](https://docs.sonarqube.org/x/CoBh) from Visual Studio Code Coverage, dotCover, OpenCover and NCover 3.
-* Support for [custom rules](https://github.com/SonarSource/sonarqube-roslyn-sdk)
+* Spport for [custom rules](https://github.com/SonarSource/sonarqube-roslyn-sdk)
 
 ## Useful links
 
